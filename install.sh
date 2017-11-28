@@ -39,7 +39,7 @@ fi
 yum install git ruby
 mkdir -p $src_dir $install_dir
 cd $src_dir
-git clone $src_url
+git clone $src_url $src_dir
 echo "Installing files..."
 install_file rootrun.rb $install_dir/
 install_file rootrun.yaml $install_dir/
