@@ -27,6 +27,7 @@
 require 'yaml'
 require 'fileutils'
 require 'timeout'
+require 'etc'
 $LOAD_PATH << File.dirname(__FILE__)
 
 #===================#
@@ -64,7 +65,7 @@ class Script
 
   def run()
     if ! $scripts_complete['scripts'].include? @script
-      self.puts_all("Running #{@script} - saving script output to #{@user_script_log.path} and #{@admin_script_log.path}")
+      self.puts_all("Running #{@script} (owner: #{Etc.getpwuid(File.stat(@script).uid).name}) - saving script output to #{@user_script_log.path} and #{@admin_script_log.path}")
       if self._run_sub
         self.puts_all("Successfully ran #{@script} - marking as complete")
         $scripts_complete['scripts'] << @script
