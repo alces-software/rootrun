@@ -1,0 +1,8 @@
+scriptdir: /var/lib/rootrun/scripts
+userlogdir: /var/lib/rootrun/logs
+adminlogdir: /var/log/rootrun
+interval: 600
+timeout: 300
+# The groups $HOSTNAME and 'all' are automatically assigned to the client.
+# 'groups:' should be followed with a comma separated list of groups to include
+groups: 

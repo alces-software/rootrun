@@ -1,0 +1,10 @@
+[Unit]
+Description=RootRun service
+After=network-online.target remote-fs.target
+
+[Service]
+Type=simple
+ExecStart=/root/rootrun.rb
+
+[Install]
+WantedBy=multi-user.target
