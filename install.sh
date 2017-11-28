@@ -36,7 +36,7 @@ if (( UID != 0 )); then
 fi
 
 # Install
-yum install git ruby
+yum install -y git ruby
 mkdir -p $src_dir $install_dir
 cd $src_dir
 git clone $src_url $src_dir
