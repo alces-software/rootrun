@@ -122,7 +122,10 @@ end
 
 def program_setup
   # Creates directories required for the program to work
-  mkdir_wrapper($scriptdir)
+  $groups.compact.each do |groupdir|
+    mkdir_wrapper("#{$scriptdir}/#{groupdir}")
+  end
+  FileUtils.chmod_R(0777, $scriptdir) # Make script directory user accessible
   mkdir_wrapper($userlogdir)
   mkdir_wrapper($adminlogdir)
 
