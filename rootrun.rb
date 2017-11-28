@@ -36,13 +36,14 @@ $LOAD_PATH << File.dirname(__FILE__)
 $rootdir = '/opt/rootrun'
 cfg_load = YAML.load_file($rootdir + '/rootrun.yaml')
 $completed_scripts_file = $rootdir + '/.scripts_complete.yaml'
+$hostname = `hostname -s`.strip
 
 $scriptdir = cfg_load['scriptdir']
 $userlogdir = cfg_load['userlogdir']
 $adminlogdir = cfg_load['adminlogdir']
 $interval = cfg_load['interval']
 $timeout = cfg_load['timeout']
-$groups = [`hostname -s`.strip, cfg_load['groups'], 'all']
+$groups = [$hostname, cfg_load['groups'], 'all']
 
 #==============#
 # Script Class #
@@ -51,9 +52,9 @@ class Script
   def initialize(full_script_path)
     @script = full_script_path
     @script_name = full_script_path.sub(/^.*\//, '')
-    @user_script_log = File.open($userlogdir + "/#{@script_name}.log", "w")
+    @user_script_log = File.open("#{$userlogdir}/#{$hostname}/#{@script_name}.log", "w")
     @user_script_log.sync = true
-    @admin_script_log = File.open($adminlogdir + "/#{@script_name}.log", "w")
+    @admin_script_log = File.open("#{$adminlogdir}/#{$hostname}/#{@script_name}.log", "w")
     @admin_script_log.sync = true
   end
 
@@ -126,8 +127,8 @@ def program_setup
     mkdir_wrapper("#{$scriptdir}/#{groupdir}")
   end
   FileUtils.chmod_R(0777, $scriptdir) # Make script directory user accessible
-  mkdir_wrapper($userlogdir)
-  mkdir_wrapper($adminlogdir)
+  mkdir_wrapper("#{$userlogdir}/#{$hostname}")
+  mkdir_wrapper("#{$adminlogdir}/#{$hostname}")
 
   # Sync output instead of buffer
   $stdout.sync = true
