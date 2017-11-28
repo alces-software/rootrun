@@ -96,7 +96,7 @@ class Script
 
     ensure
       wcommand_out.close
-      self.puts_all(rcommand_out.readlines.join("\n"))
+      self.puts_all(rcommand_out.readlines)
       rcommand_out.close
     end
 
