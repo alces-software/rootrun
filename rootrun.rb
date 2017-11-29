@@ -141,11 +141,16 @@ def program_setup
 end
 
 def scripts_permissions
-  if File.stat($scriptdir).mode == 040700 && File.stat($scriptdir).uid == 0
-    return true
-  else
-    return false
+  target_perms = 040700
+  target_uid = 0
+  $groups.compact.each do |groupdir|
+    if File.stat(groupdir).mode == target_perms && File.stat(groupdir).uid == target_uid
+      next
+    else
+      return false
+    end
   end
+  return true
 end
 
 def rootrun_main
@@ -160,7 +165,7 @@ def rootrun_main
     end
     File.write($completed_scripts_file, $scripts_complete.to_yaml)
   else
-    puts "ROOTRUN FAILED - Permissions of #{$scriptdir} is incorrect (chmod 700 #{$scriptdir} and chown root:root #{$scriptdir} will fix this)"
+    puts "ROOTRUN FAILED - Permissions of #{$scriptdir} are incorrect (chmod 700 #{$scriptdir} and chown root:root #{$scriptdir} will fix this)"
   end
   puts "ROOTRUN COMPLETE - Sleeping for #{$interval} seconds"
   sleep($interval)
