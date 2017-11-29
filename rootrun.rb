@@ -144,7 +144,7 @@ def scripts_permissions
   target_perms = 040700
   target_uid = 0
   $groups.compact.each do |groupdir|
-    if File.stat(groupdir).mode == target_perms && File.stat(groupdir).uid == target_uid
+    if File.stat("#{$scriptdir}/#{groupdir}").mode == target_perms && File.stat("#{$scriptdir}/#{groupdir}").uid == target_uid
       next
     else
       return false
