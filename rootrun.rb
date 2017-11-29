@@ -141,7 +141,7 @@ def program_setup
 end
 
 def scripts_permissions
-  if File.stat($scriptdir).mode == 040700
+  if File.stat($scriptdir).mode == 040700 && File.stat($scriptdir).uid == 0
     return true
   else
     return false
