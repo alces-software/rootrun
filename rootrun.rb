@@ -126,7 +126,8 @@ def program_setup
   $groups.compact.each do |groupdir|
     mkdir_wrapper("#{$scriptdir}/#{groupdir}")
   end
-  FileUtils.chmod_R(0777, $scriptdir) # Make script directory user accessible
+  FileUtils.chmod_R(0700, $scriptdir)
+  FileUtils.chown_R('root', 'root', $scriptdir)
   mkdir_wrapper("#{$userlogdir}/#{$hostname}")
   mkdir_wrapper("#{$adminlogdir}/#{$hostname}")
 
@@ -139,16 +140,28 @@ def program_setup
   end
 end
 
+def _scripts_permissions
+  if File.stat($scriptdir).mode = 040700
+    return true
+  else
+    return false
+  end
+end
+
 def rootrun_main
   puts "ROOTRUN START - #{Time.now.inspect}"
   $scripts_complete = YAML.load_file($completed_scripts_file)
   # Locate all script files in groups, 'compact' removes 'nil' from array preventing top-level listing
   scripts = Dir[$scriptdir + "/{#{$groups.compact.join(',')}}/*"].reject {|fn| File.directory?(fn) }.map
-  scripts.each do |script|
-    script_instance = Script.new(script)
-    script_instance.run
+  if _scripts_permissions
+    scripts.each do |script|
+      script_instance = Script.new(script)
+      script_instance.run
+    end
+    File.write($completed_scripts_file, $scripts_complete.to_yaml)
+  else
+    puts "ROOTRUN FAILED - Permissions of #{$scriptdir} is incorrect (chmod 700 #{$scriptdir} and chown root:root #{$scriptdir} will fix this)"
   end
-  File.write($completed_scripts_file, $scripts_complete.to_yaml)
   puts "ROOTRUN COMPLETE - Sleeping for #{$interval} seconds"
   sleep($interval)
 end
