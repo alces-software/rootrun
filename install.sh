@@ -21,12 +21,46 @@
 # https://github.com/alces-software/metalware
 #==============================================================================
 
-# Vars/Functions
-src_dir="$(mktemp -d /tmp/rootrun.XXXXXX)"
-src_url="https://github.com/alces-software/rootrun.git"
-install_dir="/opt/rootrun"
+# Vars
+src_dir="${alces_SRC_DIR:-$(mktemp -d /tmp/rootrun.XXXXXX)}"
+src_url="${alces_SRC_URL:-https://github.com/alces-software/rootrun.git}"
+install_dir="${alces_INSTALL_DIR:-/opt/rootrun}"
+install_type="${alces_INSTALL:-install}"
+
+# Functions
 install_file() {
     cp $src_dir/$1 $2
+}
+
+
+install_rootrun() {
+    yum -y install git ruby
+    mkdir -p $src_dir $install_dir
+    cd $src_dir
+    git clone $src_url $src_dir
+    echo "Installing files..."
+    install_file rootrun.rb $install_dir/
+    install_file rootrun.yaml $install_dir/
+    install_file rootrun.service /etc/systemd/system/
+    echo "Loading, starting and enabling service..."
+    systemctl daemon-reload
+    systemctl enable rootrun
+    systemctl restart rootrun
+}
+
+uninstall_rootrun() {
+    echo "Stopping and removing service..."
+    systemctl disable rootrun
+    systemctl stop rootrun
+    rm -f /etc/systemd/system/rootrun.service
+    systemctl daemon-reload
+    echo "Removing rootrun program files..."
+    rm -rf $install_dir/
+}
+
+reinstall_rootrun() {
+    uninstall_rootrun
+    install_rootrun
 }
 
 # Checks
@@ -35,17 +69,19 @@ if (( UID != 0 )); then
   exit 1
 fi
 
-# Install
-yum install -y git ruby
-mkdir -p $src_dir $install_dir
-cd $src_dir
-git clone $src_url $src_dir
-echo "Installing files..."
-install_file rootrun.rb $install_dir/
-install_file rootrun.yaml $install_dir/
-install_file rootrun.service /etc/systemd/system/
-echo "Loading, starting and enabling service..."
-systemctl daemon-reload
-systemctl enable rootrun
-systemctl restart rootrun
-
+# Run Installer
+case $install_type in
+    'install')
+        install_rootrun
+        ;;
+    'uninstall')
+        uninstall_rootrun
+        ;;
+    'reinstall')
+        reinstall_rootrun
+        ;;
+    *)
+        echo "'$install_type' - Unknown install option, should be install, uninstall or reinstall"
+        exit 1
+        ;;
+esac
