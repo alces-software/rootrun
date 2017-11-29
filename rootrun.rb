@@ -140,8 +140,8 @@ def program_setup
   end
 end
 
-def _scripts_permissions
-  if File.stat($scriptdir).mode = 040700
+def scripts_permissions
+  if File.stat($scriptdir).mode == 040700
     return true
   else
     return false
@@ -153,7 +153,7 @@ def rootrun_main
   $scripts_complete = YAML.load_file($completed_scripts_file)
   # Locate all script files in groups, 'compact' removes 'nil' from array preventing top-level listing
   scripts = Dir[$scriptdir + "/{#{$groups.compact.join(',')}}/*"].reject {|fn| File.directory?(fn) }.map
-  if _scripts_permissions
+  if scripts_permissions
     scripts.each do |script|
       script_instance = Script.new(script)
       script_instance.run
