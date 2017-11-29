@@ -165,7 +165,7 @@ def rootrun_main
     end
     File.write($completed_scripts_file, $scripts_complete.to_yaml)
   else
-    puts "ROOTRUN FAILED - Permissions of #{$scriptdir} are incorrect (chmod 700 #{$scriptdir} and chown root:root #{$scriptdir} will fix this)"
+    puts "ROOTRUN FAILED - Permissions of #{$scriptdir}/* are incorrect (chmod -R 700 #{$scriptdir} and chown -R root:root #{$scriptdir} will fix this)"
   end
   puts "ROOTRUN COMPLETE - Sleeping for #{$interval} seconds"
   sleep($interval)
