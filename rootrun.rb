@@ -52,9 +52,9 @@ class Script
   def initialize(full_script_path)
     @script = full_script_path
     @script_name = full_script_path.sub(/^.*\//, '')
-    @user_script_log = File.open("#{$userlogdir}/#{$hostname}/#{@script_name}.log", "w")
+    @user_script_log = File.open("#{$userlogdir}/#{$hostname}/#{@script_name}.log", "a")
     @user_script_log.sync = true
-    @admin_script_log = File.open("#{$adminlogdir}/#{$hostname}/#{@script_name}.log", "w")
+    @admin_script_log = File.open("#{$adminlogdir}/#{$hostname}/#{@script_name}.log", "a")
     @admin_script_log.sync = true
   end
 
